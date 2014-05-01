@@ -1,5 +1,5 @@
 //
-// PostIt-Bot, V0.4
+// PostIt-Bot, V0.4b
 //
 // 06/2013, 07/2013, 12/2013, 04/2014
 // (C)CC-BY-SA, FMMT666(ASkr)
@@ -14,8 +14,7 @@
 //
 // TODO:
 //
-// - Nema11 motor position ("for the nice look, only") is not calculated correctly!
-//
+//   -
 //
 //
 // CHANGES V0.2:
@@ -42,6 +41,15 @@
 //  - X: fixed missing hole(s) in belt tensioner (ball bearing)
 //  - X: redesigned the top X-tray part
 //
+// CHANGES V0.4b:
+//  - A: fixed calculation of NEMA11 motors (not relevant for machine though...)
+//  - X: added holes for a microswitch
+//  - Y: increased the bar height by 2mm; more space for locking nut for front bar bearings
+//  - A: added a workaround related to changing yA_BarHeight
+//  - A: increased the clamp size by 1mm (yA_TrayClampXZ)
+//  - A: increased the space for the bush bearing in the clamp a little
+//  - Y: added a variable for the zip-tie channel depth in the top tray (yA_TrayFloorSlotZ)
+
 
 //=======================================================================================
 //=======================================================================================
@@ -74,15 +82,20 @@ include <PIB_Y_Axis.scad>;
 include <PIB_X_Axis.scad>;
 
 
+
 //=======================================================================================
 
 CP = 100; // $fn parameter for arcs
+
+
 
 //=======================================================================================
 //=======================================================================================
 
 if( PRINTPART == 0 )
+{
   ShowMachine();
+}
 else
 {
   // ----------------------------
@@ -171,8 +184,6 @@ else
 }
 
 
-
-
 //=======================================================================================
 module ShowMachine()
 {
@@ -194,11 +205,12 @@ module ShowMachine()
   translate([yA_MMountPosX, yA_BarDist/2 + yA_MMountY,
              yA_MMountLegZ - yA_BarHeight + yA_BarOffsZ])
   Y_MotBlock();
-  
-  // not a precise calculation!
+
   translate([yA_MMountPosX, yA_BarDist/2 + yA_MMountY,
-             yA_MMountLegZ - yA_BarHeight + yA_BarOffsZ + 45/2])
+             yA_MMountLegZ - yA_BarHeight + yA_BarOffsZ])
+  translate([0,0,-20-yA_BarHeight+17.0])
   rotate([0,180,0])
+  translate([0,0,-zFloor])
   Nema11();
 
   X_BarRight();
@@ -209,17 +221,16 @@ module ShowMachine()
   
   X_BeltClamp();
 
-  // not a precise calculation!
-  translate([ xA_RodLen/2 + xA_MMountX/2, 0, xA_MMountZPos - xA_MMountZ -
-             (xA_MotorShaft - xA_MMountZ)/2 - 45])
+  translate([0,0,yA_BarHeight-17.0])
+  translate([0,0,20])
+  translate([ xA_RodLen/2 + xA_MMountY/2, 0, 0 ])
+  translate([ 0, 0, xA_MMountZPos - xA_MMountZ - (xA_MotorShaft - xA_MMountZ)/2 ])
   Nema11();
   
   X_Tray();
   
   X_ServoTray();
-  
+
 }
-
-
 
 

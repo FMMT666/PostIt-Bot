@@ -15,6 +15,7 @@
 //     - "yA_TrayHOffsX"  -> x position of the belt mounting hole in the tray
 //
 // - Rod height (z position) is determined by the length of the rods.
+//   ??? what?
 //
 
 
@@ -24,10 +25,11 @@ postItZ =            10.0;
 
 yA_TrayWall =         2.0;      // wall thickness of PostIt tray
 yA_TrayZ =            3.0;      // wall height of PostIt Tray
-yA_TrayFloorTop =     4.0;      // height of PostIt tray floor (top part)
 yA_TrayFloor =        3.0;      // height of PostIt tray floor (bottom part)
+yA_TrayFloorTop =     4.5;      // height of PostIt tray floor (top part)
+yA_TrayFloorSlotZ =   2.1;      // depth of the zip-tie "channels" in the top tray
 
-yA_TrayClampXZ =     11.0;      // x and z size of clamp
+yA_TrayClampXZ =     12.0;      // x and z size of clamp
 yA_TrayClampY =      12.0;      // y size of clamp
 yA_trayClamXtraZ =    3.0;      // extra length of the clamp
 yA_TrayZTOffsX =      1.0;      // lateral X offset of zip tie holes
@@ -36,20 +38,17 @@ yA_TrayHDiaB =        6.0;      // diameter of the middle, blind hole (screw hea
 yA_TrayHDiaBDepth =   2.3;      // depth of the middle, blind hole
 yA_TrayHOffsX =       5.0;      // x offset of the hole "in the middle"
 
-yA_RodDia =           4.4;      // diameter of the holes for the y-axis rods
-yA_RodDiaHole =       5.7;      // diameter of the hole in the clamp
-yA_BBearingDia =      8.0;      // diameter of hole for bush bearing in the clamp
-yA_BBearingLen =      4.5;      // length of bush bearing
+yA_RodDia =           4.4;      // diameter of the holes in the bars for the y-axis rods
 
-yA_BarHeight =       17.0;      // height of the rod holding bars (z)
+yA_RodDiaHole =       6.3;      // diameter of the two holes in the clamp (rod in/out)
+yA_BBearingLen =      4.6;      // length of bush bearing
+yA_BBearingDia =      7.8;      // diameter of the hole for the bush bearing in the clamp
+
+yA_BarHeight =       19.0;      // height of the rod holding bars (z) infl. motor mount and zFloor
 yA_BarDepth =        10.0;      // depth of the rod holding bars (y)
 yA_BarWidth =        80.0;      // width of the bars (x)
 
-
-  // TODO: yA_RodLen instead of yA_BarDist
-
-//yA_BarDist =        2 * (postItY + 2 * yA_TrayWall - yA_BarDepth);  // z distance of bars
-yA_BarDist =        180.0;
+yA_BarDist =        180.0;      // distance of the two bars (inner to inner)
 
 yA_BarOffsZ =        -2.0;      // additional z position offset ( <0 means down)
 yA_BarMHDia =         4.0;      // mounting hole diameter
@@ -75,7 +74,7 @@ yA_MMountSDis =      23.0;      // screw distance
 yA_MMountSDia =       2.8;      // screw hole diameter
 yA_MMountADia =       7.0;      // diameter of the axis hole
 yA_MMountLegX =      10.0;      // width of a motor mount leg
-yA_MMountLegZ =      25.0;      // height of a motor mount leg (consider motor axis!)
+yA_MMountLegZ =      25.0 - 17.0 + yA_BarHeight; // height of a motor mount leg (consider motor axis!)
 yA_MMountLegDia =     4.6;      // diameter of the hole in the motor mount leg
 yA_MMountLegDiaZ =   10.0;      // height of the leg hole (from BOTTOM!)
 
@@ -104,12 +103,14 @@ yA_TrayClampPos = [ [ pX,-pY,  0 ],
 //=== PART!
 module Y_MotBlock()
 {
+  // POS: top at [0,0,0]
+
   union()
   {
     difference()
     {
       // motor mounting block
-      translate([0,0,-yA_MMountZ/2])
+      translate([0,0,-yA_MMountZ/2 ])
       cube([yA_MMountX,yA_MMountY,yA_MMountZ], center=true);
 
       // round motor mount cutout
@@ -194,6 +195,8 @@ module Y_BarBack()
 //=======================================================================================
 module Y_SwHoles()
 {
+  // POS: middle between holes at [0,0]; holes go DOWN, add. height: 2mm top
+
   translate([ -yA_SwHoleDis/2, 0, -yA_SwHoleDepth/2 + 1 ])
   cylinder( r = yA_SwHoleDia/2, h = yA_SwHoleDepth + 2, center = true, $fn = CP);
   translate([  yA_SwHoleDis/2, 0, -yA_SwHoleDepth/2 + 1])
@@ -394,10 +397,16 @@ module Y_TrayTop()
     for( i = yA_TrayClampPos )
     {
       // top zip-tie channel
-      translate([i[0],i[1],yA_TrayFloorTop+(zipTieHeight+2)/2-zipTieHeight])
+/*      
+      translate([ i[0], i[1], yA_TrayFloorTop + (zipTieHeight+2)/2 - zipTieHeight] )
       cube([yA_TrayClampXZ + 2*yA_TrayZTOffsX, zipTieWidth, zipTieHeight+2 ],
            center=true);
-
+*/
+      translate([ i[0], i[1], yA_TrayFloorTop + (yA_TrayFloorSlotZ+2)/2 - yA_TrayFloorSlotZ ] )
+      cube([yA_TrayClampXZ + 2*yA_TrayZTOffsX, zipTieWidth, yA_TrayFloorSlotZ+2 ],
+           center=true);
+           
+           
       // right hole for zip tie
       translate([ i[0] + yA_TrayClampXZ / 2 + yA_TrayZTOffsX, i[1], 0] )
       cube([zipTieHeight,zipTieWidth,4*yA_TrayFloorTop], center = true);

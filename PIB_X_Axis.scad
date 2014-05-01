@@ -10,7 +10,7 @@
 //
 //   - All coordinates given (x,y,z) are valid "in-situ", with all parts assembled.
 //     "x" is left/right
-//     "y" if forward/back
+//     "y" if forward/backward
 //     "z" is up/down
 //
 
@@ -52,6 +52,7 @@ xA_MMountSDis = yA_MMountSDis;  // screw distance
 xA_MMountSDia = yA_MMountSDia;  // screw hole diameter
 xA_MotorShaft =      18.0;      // motor shaft length
 xA_MMountZPos = xA_RodZ + xA_RodDist/2; // height (z) of the y motor mount
+xA_SwHoleOffsX =      1.0;      // additional offset of the microswitch holes (x)
 
 xA_BeltHoleY =       16.0;      // belt hole width (y)
 xA_BeltHoleZ =        8.0;      // belt hole height (z)
@@ -85,7 +86,7 @@ xA_SSizeY =           2.0;      // thickness of the servo tray (y)
 xA_SMPosX =          16.5;      // servo pod position from middle of servo tray; both dirs (x)
 xA_SMSizeX =          9.0;      // servo mount pod width (x)
 xA_SMSizeZ =          7.0;      // servo mount pod height (z)
-xA_SMSizeY =         20.0;      // servo mount pod length (y), servo is on top of this
+xA_SMSizeY =         21.0;      // servo mount pod length (y), servo is on top of this
 yA_SMDist =          22.6;      // space for servo body (space between pods, z)
 yA_SMHoleDia =        2.0;      // diameter of holes in pod for screws
 yA_SMHoleDepth =      8.0;      // depth of the holes in pod for screws
@@ -401,6 +402,8 @@ module X_ClampHoles()
 //=======================================================================================
 module X_MotBlock()
 {
+  // POSITION: bottom of the block at [ 0, 0, zFloor ]
+  
   translate([0,0,zFloor])
   rotate([180,0,0])
   difference()
@@ -433,8 +436,10 @@ module X_MotBlock()
 //=======================================================================================
 module Nema11( )
 {
-  translate([0,0,xA_MMountZPos - xA_MMountZ - xA_MotorShaft/2 ])
-  translate([ 0,0, zFloor - 45/2])
+  // POSITION: tip of shaft at [ 0, 0, zFloor ]
+  // length of shaft is 18mm, thickness of round "plate" is 2mm
+  
+  translate([ 0,0, 2*zFloor - 45/2])
   union()
   {
     translate([ 0, 0, 45/2 + 1 + 18/2])
@@ -469,6 +474,20 @@ module X_BeltHoleCutout( )
 }
 
 
+//=======================================================================================
+module X_MicroswitchHoles( )
+{
+  // POS: directly where they should be
+
+  translate([ xA_SwHoleOffsX, 0, 0] )
+  translate([ 0,0, xA_RodZ + 1/2*xA_RodDist] )
+  translate([ 0, -xA_BarY/2, 0 ])  // y pos right now
+  translate([ -xA_BarX/2, 0, 0])   // x middle of right bar
+  translate([ xA_RodLen/2 ,0 ,0 ]) // x at end of rod (right)
+  translate([ 0,0,zFloor])         // z at zFloor now
+  rotate([0,90,-90])
+  Y_SwHoles  ();
+}
 
 
 //=======================================================================================
@@ -498,6 +517,9 @@ module X_BarRight( )
     // holes for nuts (to fix rods)
     translate([ xA_RodLen/2 - xA_BarX/2, 0, 0])
     NutSlotCutsXBars();
+    
+    // holes for the microswitch
+    X_MicroswitchHoles();
     
   }// END difference
 
