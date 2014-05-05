@@ -79,6 +79,7 @@ xA_PCutType =         5;        // number of edges of the "prism cutter" ($fn fo
 xA_PCutDepth =        5.0;      // depth of the prism cut
 
 xA_SMZIPHOLES =         1;      // EXPERIMENTAL: make zip-tie holes in servo mount tray (1/0 = on/off)
+                                //               this also turns off the zip-tie channels in the bot tray
 xA_SMSCREWHOLES =       1;      // EXPERIMENTAL: make screw holes in servo mount tray (1/0 = on/off)
 xA_SMScrewDia =       3.5;      // diameter of the screws in the servo mount
 xA_SMScrewPosX =     16.5;      // screw hole position from middle of tray; both dirs (x)
@@ -256,10 +257,13 @@ module X_Tray()
         translate([x,0,z - yA_TrayClampXZ/2 - zipTieHeight/2 - 0.2])
         cube([ zipTieWidth, 20*xA_TSizeY, zipTieHeight ], center = true );
 
-        // two zip tie channels
-        translate( [x, - yA_TrayClampXZ/2 - yA_trayClamXtraZ - xA_TSizeY + xA_TSink ,0] )
-        rotate( [90,0,0] )
-        cube([ zipTieWidth, 10*xA_RodDist, 2*zipTieHeight ], center = true );
+        if( !xA_SMZIPHOLES )
+        {
+          // two zip tie channels
+          translate( [x, - yA_TrayClampXZ/2 - yA_trayClamXtraZ - xA_TSizeY + xA_TSink ,0] )
+          rotate( [90,0,0] )
+          cube([ zipTieWidth, 10*xA_RodDist, 2*zipTieHeight ], center = true );
+        }
       
       }// END for x
     }// END for z

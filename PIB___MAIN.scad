@@ -1,5 +1,5 @@
 //
-// PostIt-Bot, V0.4b
+// PostIt-Bot, V0.4c
 //
 // 06/2013, 07/2013, 12/2013, 04/2014
 // (C)CC-BY-SA, FMMT666(ASkr)
@@ -49,6 +49,10 @@
 //  - A: increased the clamp size by 1mm (yA_TrayClampXZ)
 //  - A: increased the space for the bush bearing in the clamp a little
 //  - Y: added a variable for the zip-tie channel depth in the top tray (yA_TrayFloorSlotZ)
+//
+// CHANGES V0.4c:
+//  - X: zip-tie channels in bot tray turned off if "xA_SMZIPHOLES" (holes in servo tray) is activated
+//
 
 
 //=======================================================================================
@@ -67,8 +71,8 @@
 //   10 -> X right bar
 //   11 -> X left bar
 //   12 -> X belt tensioner
-//   13 -> X tray
-//   14 -> X tray top
+//   13 -> X tray bot (clamp part)
+//   14 -> X tray top (servo tray)
 //
 
 PRINTPART =  0;  // choose which part should be created
